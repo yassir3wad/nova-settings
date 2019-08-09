@@ -2,7 +2,7 @@
 
 namespace Yassir3wad\Settings\Http\Controllers;
 
-use App\Models\Setting;
+use Yassir3wad\Settings\Models\Setting;
 use Illuminate\Http\Request;
 
 class SettingsController extends Controller
