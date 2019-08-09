@@ -7,6 +7,7 @@ use Laravel\Nova\Events\ServingNova;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Yassir3wad\Settings\Http\Middleware\Authorize;
+use Yassir3wad\Settings\Resources\Setting;
 
 class ToolServiceProvider extends ServiceProvider
 {
@@ -24,6 +25,10 @@ class ToolServiceProvider extends ServiceProvider
         });
 
         $this->loadMigrations();
+
+        Nova::resources([
+            Setting::class
+        ]);
     }
 
     /**
@@ -38,8 +43,9 @@ class ToolServiceProvider extends ServiceProvider
         }
 
         Route::middleware(['nova', Authorize::class])
-                ->prefix('nova-vendor/settings')
-                ->group(__DIR__.'/../routes/api.php');
+            ->prefix('nova-vendor/settings')
+            ->group(__DIR__.'/../routes/api.php');
+
     }
 
     private function loadMigrations()
