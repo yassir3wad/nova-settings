@@ -19,6 +19,7 @@ class ToolServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'settings');
+        $this->mergeConfigFrom(__DIR__ . '/../config/settings.php', 'settings');
 
         $this->app->booted(function () {
             $this->routes();
