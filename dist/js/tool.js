@@ -304,21 +304,9 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     mixins: [__WEBPACK_IMPORTED_MODULE_1_laravel_nova__["InteractsWithResourceInformation"]],
-
     props: {
         resourceName: {
-            type: String,
-            required: true,
-            default: 'Settings'
-        },
-        viaResource: {
-            default: ''
-        },
-        viaResourceId: {
-            default: ''
-        },
-        viaRelationship: {
-            default: ''
+            default: 'settings'
         }
     },
 
@@ -335,41 +323,13 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
     created: function () {
         var _ref = _asyncToGenerator( /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.mark(function _callee() {
-            var _ref2, data;
-
             return __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.wrap(function _callee$(_context) {
                 while (1) {
                     switch (_context.prev = _context.next) {
                         case 0:
-                            this.resourceName = "settings";
-
-                            if (!Nova.missingResource(this.resourceName)) {
-                                _context.next = 3;
-                                break;
-                            }
-
-                            return _context.abrupt('return', this.$router.push({ name: '404' }));
-
-                        case 3:
-                            if (!this.isRelation) {
-                                _context.next = 9;
-                                break;
-                            }
-
-                            _context.next = 6;
-                            return Nova.request('/nova-api/' + this.viaResource + '/field/' + this.viaRelationship);
-
-                        case 6:
-                            _ref2 = _context.sent;
-                            data = _ref2.data;
-
-                            this.relationResponse = data;
-
-                        case 9:
-
                             this.getFields();
 
-                        case 10:
+                        case 1:
                         case 'end':
                             return _context.stop();
                     }
@@ -394,8 +354,8 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
          * Get the available fields for the resource.
          */
         getFields: function () {
-            var _ref3 = _asyncToGenerator( /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.mark(function _callee2() {
-                var _ref4, fields;
+            var _ref2 = _asyncToGenerator( /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.mark(function _callee2() {
+                var _ref3, data;
 
                 return __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.wrap(function _callee2$(_context2) {
                     while (1) {
@@ -404,22 +364,14 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
                                 this.fields = [];
 
                                 _context2.next = 3;
-                                return Nova.request().get('/nova-api/' + this.resourceName + '/creation-fields', {
-                                    params: {
-                                        editing: true,
-                                        editMode: 'create',
-                                        viaResource: this.viaResource,
-                                        viaResourceId: this.viaResourceId,
-                                        viaRelationship: this.viaRelationship
-                                    }
-                                });
+                                return Nova.request().get('/nova-vendor/' + this.resourceName + '/' + this.resourceName);
 
                             case 3:
-                                _ref4 = _context2.sent;
-                                fields = _ref4.data.fields;
+                                _ref3 = _context2.sent;
+                                data = _ref3.data;
 
 
-                                this.fields = fields;
+                                this.fields = data;
                                 this.loading = false;
 
                             case 7:
@@ -431,7 +383,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
             }));
 
             function getFields() {
-                return _ref3.apply(this, arguments);
+                return _ref2.apply(this, arguments);
             }
 
             return getFields;
@@ -442,7 +394,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
          * Create a new resource instance using the provided data.
          */
         createResource: function () {
-            var _ref5 = _asyncToGenerator( /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.mark(function _callee3() {
+            var _ref4 = _asyncToGenerator( /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.mark(function _callee3() {
                 var response;
                 return __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.wrap(function _callee3$(_context3) {
                     while (1) {
@@ -459,15 +411,16 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
                                 this.submittedViaCreateResource = false;
 
-                                this.$toasted.show(this.__('The Settings was saved!', {
-                                    resource: this.resourceInformation.singularLabel.toLowerCase()
-                                }), { type: 'success' });
+                                this.$toasted.show(this.__('The Settings was saved!'), { type: 'success' });
+                                // Reset the form by refetching the fields
+                                this.getFields();
 
-                                _context3.next = 13;
+                                this.validationErrors = new __WEBPACK_IMPORTED_MODULE_1_laravel_nova__["Errors"]();
+                                _context3.next = 15;
                                 break;
 
-                            case 9:
-                                _context3.prev = 9;
+                            case 11:
+                                _context3.prev = 11;
                                 _context3.t0 = _context3['catch'](1);
 
                                 this.submittedViaCreateResource = false;
@@ -476,16 +429,16 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
                                     this.validationErrors = new __WEBPACK_IMPORTED_MODULE_1_laravel_nova__["Errors"](_context3.t0.response.data.errors);
                                 }
 
-                            case 13:
+                            case 15:
                             case 'end':
                                 return _context3.stop();
                         }
                     }
-                }, _callee3, this, [[1, 9]]);
+                }, _callee3, this, [[1, 11]]);
             }));
 
             function createResource() {
-                return _ref5.apply(this, arguments);
+                return _ref4.apply(this, arguments);
             }
 
             return createResource;
@@ -515,18 +468,6 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
     },
 
     computed: {
-        singularName: function singularName() {
-            if (this.relationResponse) {
-                return this.relationResponse.singularLabel;
-            }
-
-            return this.resourceInformation.singularLabel;
-        },
-        isRelation: function isRelation() {
-            return Boolean(this.viaResourceId && this.viaRelationship);
-        },
-
-
         /**
          * Determine if the form is being processed
          */
@@ -11627,9 +11568,9 @@ var render = function() {
                                   errors: _vm.validationErrors,
                                   "resource-name": _vm.resourceName,
                                   field: field,
-                                  "via-resource": _vm.viaResource,
-                                  "via-resource-id": _vm.viaResourceId,
-                                  "via-relationship": _vm.viaRelationship
+                                  "via-resource": "",
+                                  "via-resource-id": "",
+                                  "via-relationship": ""
                                 }
                               })
                             ],
@@ -11660,7 +11601,7 @@ var render = function() {
                           "\n                    " +
                             _vm._s(_vm.__("Save")) +
                             " " +
-                            _vm._s(_vm.singularName) +
+                            _vm._s(_vm.__("Settings")) +
                             "\n                "
                         )
                       ]

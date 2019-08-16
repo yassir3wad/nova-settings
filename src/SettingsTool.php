@@ -2,11 +2,15 @@
 
 namespace Yassir3wad\Settings;
 
+use Illuminate\Support\Collection;
 use Laravel\Nova\Nova;
 use Laravel\Nova\Tool;
 
-class Settings extends Tool
+class SettingsTool extends Tool
 {
+
+    protected static $fields = [];
+
     /**
      * Perform any tasks that need to happen when the tool is booted.
      *
@@ -14,7 +18,7 @@ class Settings extends Tool
      */
     public function boot()
     {
-        Nova::script('settings', __DIR__.'/../dist/js/tool.js');
+        Nova::script('settings', __DIR__ . '/../dist/js/tool.js');
     }
 
     /**
@@ -25,5 +29,15 @@ class Settings extends Tool
     public function renderNavigation()
     {
         return view('settings::navigation');
+    }
+
+    public static function setFields($fields = [])
+    {
+        self::$fields = $fields;
+    }
+
+    public static function getFields(): Collection
+    {
+        return collect(self::$fields);
     }
 }

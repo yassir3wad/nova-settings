@@ -3,7 +3,7 @@
 namespace Yassir3wad\Settings\Http\Middleware;
 
 use Laravel\Nova\Nova;
-use Yassir3wad\Settings\Settings;
+use Yassir3wad\Settings\SettingsTool;
 
 class Authorize
 {
@@ -29,6 +29,6 @@ class Authorize
      */
     public function matchesTool($tool)
     {
-        return $tool instanceof Settings;
+        return $tool instanceof SettingsTool;
     }
 }

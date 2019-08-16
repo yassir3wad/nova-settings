@@ -18,5 +18,5 @@ use Illuminate\Support\Facades\Route;
 //     //
 // });
 
-//Route::get('settings', 'Yassir3wad\Settings\Http\Controllers\SettingsController@index');
-Route::post('settings', 'Yassir3wad\Settings\Http\Controllers\SettingsController@store');
+Route::get('settings', [\Yassir3wad\Settings\Http\Controllers\SettingsController::class, 'index']);
+Route::post('settings', [\Yassir3wad\Settings\Http\Controllers\SettingsController::class, 'update']);

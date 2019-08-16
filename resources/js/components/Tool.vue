@@ -17,13 +17,13 @@
                     <!-- Fields -->
                     <div v-for="field in fields" v-if="key===field.section">
                         <component
-                            :is="'form-' + field.component"
-                            :errors="validationErrors"
-                            :resource-name="resourceName"
-                            :field="field"
-                            :via-resource="viaResource"
-                            :via-resource-id="viaResourceId"
-                            :via-relationship="viaRelationship"
+                                :is="'form-' + field.component"
+                                :errors="validationErrors"
+                                :resource-name="resourceName"
+                                :field="field"
+                                :via-resource="''"
+                                :via-resource-id="''"
+                                :via-relationship="''"
                         />
                     </div>
                 </div>
@@ -31,12 +31,12 @@
                 <!-- Create Button -->
                 <div class="bg-30 flex px-8 py-4">
                     <progress-button
-                        dusk="create-button"
-                        type="submit"
-                        :disabled="isWorking"
-                        :processing="submittedViaCreateResource"
+                            dusk="create-button"
+                            type="submit"
+                            :disabled="isWorking"
+                            :processing="submittedViaCreateResource"
                     >
-                        {{ __('Save') }} {{ singularName }}
+                        {{ __('Save') }} {{ __('Settings') }}
                     </progress-button>
                 </div>
             </form>
@@ -45,26 +45,14 @@
 </template>
 
 <script>
-    import {Errors, Minimum, InteractsWithResourceInformation} from 'laravel-nova'
+    import {Errors, InteractsWithResourceInformation} from 'laravel-nova'
 
     export default {
         mixins: [InteractsWithResourceInformation],
-
         props: {
             resourceName: {
-                type: String,
-                required: true,
-                default: 'Settings'
-            },
-            viaResource: {
-                default: '',
-            },
-            viaResourceId: {
-                default: '',
-            },
-            viaRelationship: {
-                default: '',
-            },
+                default: 'settings'
+            }
         },
 
         data: () => ({
@@ -77,19 +65,7 @@
         }),
 
         async created() {
-            this.resourceName = "settings";
-            if (Nova.missingResource(this.resourceName)) return this.$router.push({name: '404'})
-
-            // If this create is via a relation index, then let's grab the field
-            // and use the label for that as the one we use for the title and buttons
-            if (this.isRelation) {
-                const {data} = await Nova.request(
-                    '/nova-api/' + this.viaResource + '/field/' + this.viaRelationship
-                )
-                this.relationResponse = data
-            }
-
-            this.getFields()
+            this.getFields();
         },
 
         methods: {
@@ -102,20 +78,9 @@
             async getFields() {
                 this.fields = []
 
-                const {data: {fields}} = await Nova.request().get(
-                    `/nova-api/${this.resourceName}/creation-fields`,
-                    {
-                        params: {
-                            editing: true,
-                            editMode: 'create',
-                            viaResource: this.viaResource,
-                            viaResourceId: this.viaResourceId,
-                            viaRelationship: this.viaRelationship,
-                        },
-                    }
-                )
+                const {data} = await Nova.request().get(`/nova-vendor/${this.resourceName}/${this.resourceName}`)
 
-                this.fields = fields
+                this.fields = data;
                 this.loading = false
             },
 
@@ -130,12 +95,13 @@
                     this.submittedViaCreateResource = false
 
                     this.$toasted.show(
-                        this.__('The Settings was saved!', {
-                            resource: this.resourceInformation.singularLabel.toLowerCase(),
-                        }),
+                        this.__('The Settings was saved!'),
                         {type: 'success'}
-                    )
+                    );
+                    // Reset the form by refetching the fields
+                    this.getFields();
 
+                    this.validationErrors = new Errors();
                 } catch (error) {
                     this.submittedViaCreateResource = false
 
@@ -168,18 +134,6 @@
         },
 
         computed: {
-            singularName() {
-                if (this.relationResponse) {
-                    return this.relationResponse.singularLabel
-                }
-
-                return this.resourceInformation.singularLabel
-            },
-
-            isRelation() {
-                return Boolean(this.viaResourceId && this.viaRelationship)
-            },
-
             /**
              * Determine if the form is being processed
              */

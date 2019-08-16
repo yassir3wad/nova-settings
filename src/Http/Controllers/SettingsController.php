@@ -2,16 +2,55 @@
 
 namespace Yassir3wad\Settings\Http\Controllers;
 
-use Yassir3wad\Settings\Models\Setting;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Validator;
+use Laravel\Nova\Contracts\Resolvable;
+use Laravel\Nova\Fields\Field;
+use Laravel\Nova\Http\Requests\NovaRequest;
 use Illuminate\Http\Request;
+use Yassir3wad\Settings\Models\Setting;
+use Yassir3wad\Settings\SettingsTool;
 
 class SettingsController extends Controller
 {
-    public function store(Request $request)
+    public function index(Request $request)
     {
-        collect($request->all())->each(function ($setting, $key) use ($request) {
-            Setting::where('key', $key)->update(['value' => $setting]);
+        $fields = SettingsTool::getFields();
+        $settings = Setting::whereActive(true)->get();
+
+        $fields->whereInstanceOf(Resolvable::class)
+            ->filter(function (Field $field) use ($settings) {
+                return $settings->firstWhere("name", $field->attribute);
+            })
+            ->each(function (Field &$field) use ($settings) {
+                $setting = $settings->firstWhere("name", $field->attribute);
+                $field->resolve([$field->attribute => $setting->value]);
+                $field->withMeta(['section' => $setting->section]);
+            });
+
+        return $fields;
+    }
+
+    public function update(NovaRequest $request)
+    {
+        $fields = SettingsTool::getFields();
+
+        $this->validateFields($request, $fields);
+        $fields->whereInstanceOf(Resolvable::class)->each(function (Field $field) use ($request) {
+            $tempResource = new \stdClass;
+            $field->fill($request, $tempResource);
+            Setting::updateOrCreate(['name' => $field->attribute], ['value' => $tempResource->{$field->attribute}]);
         });
+
         return response()->json([]);
+    }
+
+    private function validateFields(NovaRequest $request, Collection $fields)
+    {
+        $rules = $fields->mapWithKeys(function (Field $field) use ($request) {
+            return $field->getCreationRules($request);
+        })->all();
+
+        Validator::make($request->all(), $rules)->validate();
     }
 }
