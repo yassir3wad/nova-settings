@@ -37,7 +37,7 @@ class SettingsController extends Controller
 
         $this->validateFields($request, $fields);
         $fields->whereInstanceOf(Resolvable::class)->each(function (Field $field) use ($request) {
-            $tempResource = new \stdClass;
+            $tempResource = new Setting();
             $field->fill($request, $tempResource);
             Setting::updateOrCreate(['name' => $field->attribute], ['value' => $tempResource->{$field->attribute}]);
         });

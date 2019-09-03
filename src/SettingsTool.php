@@ -31,9 +31,10 @@ class SettingsTool extends Tool
         return view('settings::navigation');
     }
 
-    public static function setFields($fields = [])
+    public function setFields($fields = [])
     {
         self::$fields = $fields;
+        return $this;
     }
 
     public static function getFields(): Collection
