@@ -20,6 +20,10 @@ class ToolServiceProvider extends ServiceProvider
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'settings');
 
         $this->publishes([
+            __DIR__.'/../config/settings.php' => config_path('settings.php'),
+        ]);
+
+        $this->publishes([
             __DIR__ . '/../database/seeds/SettingsSeeder.php' => $this->app->databasePath() . "/seeds/SettingsSeeder.php",
         ], 'seeds');
 

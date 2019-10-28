@@ -8,15 +8,22 @@ use Laravel\Nova\Contracts\Resolvable;
 use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Illuminate\Http\Request;
-use Yassir3wad\Settings\Models\Setting;
 use Yassir3wad\Settings\SettingsTool;
 
 class SettingsController extends Controller
 {
+
+    private $model;
+
+    public function __construct()
+    {
+        $this->model = config('settings.model');
+    }
+
     public function index(Request $request)
     {
         $fields = SettingsTool::getFields();
-        $settings = Setting::whereActive(true)->get();
+        $settings = $this->model::whereActive(true)->get();
 
         $fields->whereInstanceOf(Resolvable::class)
             ->filter(function (Field $field) use ($settings) {
@@ -37,9 +44,9 @@ class SettingsController extends Controller
 
         $this->validateFields($request, $fields);
         $fields->whereInstanceOf(Resolvable::class)->each(function (Field $field) use ($request) {
-            $tempResource = new Setting();
+            $tempResource = new $this->model();
             $field->fill($request, $tempResource);
-            Setting::updateOrCreate(['name' => $field->attribute], ['value' => $tempResource->{$field->attribute}]);
+            $this->model::updateOrCreate(['name' => $field->attribute], ['value' => $tempResource->{$field->attribute}]);
         });
 
         return response()->json([]);
