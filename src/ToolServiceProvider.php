@@ -26,6 +26,8 @@ class ToolServiceProvider extends ServiceProvider
           $this->publishes([
             __DIR__.'/../resources/lang/' => resource_path('lang/vendor/nova-settings'),
         ]);
+        
+         $this->registerTranslations();
 
         $this->publishes([
             __DIR__ . '/../database/seeds/SettingsSeeder.php' => $this->app->databasePath() . "/seeds/SettingsSeeder.php",
@@ -69,5 +71,11 @@ class ToolServiceProvider extends ServiceProvider
     public function register()
     {
         //
+    }
+    
+       protected function registerTranslations()
+    {
+        $this->loadJSONTranslationsFrom(__DIR__.'/../resources/lang');
+        $this->loadJSONTranslationsFrom(resource_path('lang/vendor/nova-settings'));
     }
 }
