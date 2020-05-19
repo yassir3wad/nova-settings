@@ -22,6 +22,10 @@ class ToolServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../config/settings.php' => config_path('settings.php'),
         ]);
+        
+          $this->publishes([
+            __DIR__.'/../resources/lang/' => resource_path('lang/vendor/nova-settings'),
+        ]);
 
         $this->publishes([
             __DIR__ . '/../database/seeds/SettingsSeeder.php' => $this->app->databasePath() . "/seeds/SettingsSeeder.php",
